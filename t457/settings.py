@@ -14,7 +14,7 @@ NEWSPIDER_MODULE = "t457.spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = "t457 (+http://www.yourdomain.com)"
+USER_AGENT = "t457spidr (+https://t457.org)"
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
