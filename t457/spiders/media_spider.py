@@ -1,5 +1,6 @@
 import logging
 from functools import cached_property
+from pathlib import Path
 from urllib.parse import urljoin, urlsplit, urlunsplit
 from scrapy import Request
 from scrapy.linkextractors.lxmlhtml import LxmlLinkExtractor
@@ -73,12 +74,12 @@ class MediaSpider(SitemapSpider):
         base_url = response.css('head > base').attrib.get('href', response.url)
         for link in self.anchors.extract_links(response):
             # not sure if scrapy does the urljoin
-            LOG.info('anchor link: %s', link.url)
+            LOG.debug('anchor link: %s', link.url)
             url = urljoin(base_url, link.url)
             yield Request(url, self.parse)
 
         for link in self.media.extract_links(response):
-            LOG.info('media link: %s', link.url)
+            LOG.debug('media link: %s', link.url)
             url = urljoin(base_url, link.url)
             # link extractor will definitely clean-up the versioning
             url = clean_wixstatic_url(url)
@@ -87,5 +88,12 @@ class MediaSpider(SitemapSpider):
     def parse_media(self, response):
         item = T457Item.load_from(response)
         yield item
+        
+        if self.download_path is not None:
+            name = urlsplit(response.url).path.split('/')[-1]
+            path = Path(self.download_path) / name
+            with path.open('wb') as f:
+                f.write(response.body)
+            LOG.info('Saved %s', path)
 
     # closed(self) is called when the spider is closed

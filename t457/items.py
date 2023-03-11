@@ -9,6 +9,7 @@ from typing import Optional
 
 @dataclass
 class T457Item:
+    status: int
     url: str
     mime_type: str
     length: Optional[int]
@@ -27,4 +28,4 @@ class T457Item:
         length = None
         if 'Content-Length' in response.headers:
             length = int(response.headers['Content-Length'].decode('utf-8'))
-        return cls(url, mime_type, length)
+        return cls(response.status, url, mime_type, length)
